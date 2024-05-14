@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "330057627535",
+    "project_id": "clubs-94def",
+    "storage_bucket": "clubs-94def.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330057627535:android:2f8a545851d7a91165fdfa",
+        "android_client_info": {
+          "package_name": "com.elc.clubs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330057627535-thhgl67q9e4snps29tvbi2sh8aqclp8u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.elc.clubs",
+            "certificate_hash": "1daa7a55d6f14c2c2c44f6b1f259488e87836536"
+          }
+        },
+        {
+          "client_id": "330057627535-gf87u90n66fkb0mk78var7b99ep4l7f3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwmdO2B6ivYbzkXuPFe_fpOjLDUIOcovI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "330057627535-gf87u90n66fkb0mk78var7b99ep4l7f3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "330057627535-iocfr85neftgmlgl302emvig70hrjqji.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.elc.clubs"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
