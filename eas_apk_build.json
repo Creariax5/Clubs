@@ -3,14 +3,6 @@
     "version": ">= 9.0.3"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "ios": {
-        "resourceClass": "m1-medium",
-        "simulator": true
-      }
-    },
     "preview": {
       "android": {
         "buildType": "apk"
@@ -27,13 +19,6 @@
     "preview4": {
       "distribution": "internal"
     },
-    "production": {
-      "ios": {
-        "resourceClass": "m1-medium"
-      }
-    }
-  },
-  "submit": {
     "production": {}
   }
 }

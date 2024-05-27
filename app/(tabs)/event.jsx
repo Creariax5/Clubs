@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Layout, Text, List } from '@ui-kitten/components';
 import EventItem from '../../components/eventItem'
 
@@ -15,32 +15,33 @@ const data = [
 		id: '2',
 		title: 'Third Item',
 	},
-	{
-		id: '3',
-		title: 'Third Item',
-	},
-	{
-		id: '4',
-		title: 'First Item',
-	},
-	{
-		id: '5',
-		title: 'Second Item',
-	},
-	{
-		id: '6',
-		title: 'Third Item',
-	},
 ];
 
 
 export default function Event() {
 	return (
-		<ScrollView style={{ width: '100%' }} contentContainerStyle={styles.container}>
-			{
-				data.map((item) => <EventItem key={item.id} />)
-			}
-		</ScrollView>
+		<>
+			<ScrollView style={{ width: '100%' }} >
+				<View>
+					<Text appearance='hint' style={{ margin: 16, marginBottom: 4, marginTop: 8 }}>TERMINÉS</Text>
+
+					<ScrollView
+						style={{ width: '100%' }}
+						contentContainerStyle={styles.container}
+					>
+						{
+							data.map((item) => <EventItem key={item.id} />)
+						}
+					</ScrollView>
+				</View>
+				<Text appearance='hint' style={{ margin: 16, marginBottom: 4 }}>A VENIR</Text>
+				<ScrollView style={{ width: '100%' }} contentContainerStyle={styles.container}>
+					{
+						data.map((item) => <EventItem key={item.id} />)
+					}
+				</ScrollView>
+			</ScrollView>
+		</>
 	);
 }
 

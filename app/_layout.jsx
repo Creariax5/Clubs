@@ -1,7 +1,7 @@
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState, createContext } from 'react';
+import { useEffect, useState, createContext, useContext } from 'react';
 import 'react-native-reanimated';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { IconRegistry, ApplicationProvider } from '@ui-kitten/components';
@@ -10,51 +10,48 @@ import { default as theme } from './theme.json';
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { firebase } from '@react-native-firebase/database';
-//import AsyncStorage from '@react-native-async-storage/async-storage';
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const reference = firebase
-	.app()
-	.database('https://clubs-94def-default-rtdb.europe-west1.firebasedatabase.app/')
-	.ref('/user');
+//const reference = database('https://clubs-94def-default-rtdb.europe-west1.firebasedatabase.app/').ref('/user');
 
 export const UserContext = createContext(null);
 
-/*
 const storeData = async (value, key) => {
+	//console.log("storing ", value)
 	try {
 		const jsonValue = JSON.stringify(value);
 		await AsyncStorage.setItem(key, jsonValue);
-		console.log("saved", jsonValue);
+		//console.log("saved", jsonValue);
 	} catch (e) {
-		console.log(e);
+		//console.log(e);
 	}
 };
-
-const getData = async (key) => {
-	try {
-		const jsonValue = await AsyncStorage.getItem(key);
-		console.log("readed", jsonValue);
-		return jsonValue != null ? JSON.parse(jsonValue) : null;
-	} catch (e) {
-		console.log(e);
-	}
-};
-*/
-
 
 export default function RootLayout() {
 	const [error, setError] = useState();
 	const [userInfo, setUserInfo] = useState();
 
-	/*
+	const getData = async (key) => {
+		try {
+			const jsonValue = await AsyncStorage.getItem(key);
+			//console.log("readed", jsonValue);
+			if (jsonValue !== null) {
+
+				setUserInfo(JSON.parse(jsonValue));
+			}
+		} catch (e) {
+			//console.log(e);
+		}
+	};
+
 	useEffect(() => {
-		setUserInfo(getData("user"));
+		getData("user");
 	}, []);
-	*/
 
 	useEffect(() => {
 		GoogleSignin.configure({
@@ -64,26 +61,36 @@ export default function RootLayout() {
 	}, []);
 
 	const signin = async () => {
+		//console.log("signin");
 		try {
 			await GoogleSignin.hasPlayServices();
-			const user = await GoogleSignin.signIn();
-			setUserInfo(user.user);
+			const userInfo = await GoogleSignin.signIn();
+			const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
+			const account = await auth().signInWithCredential(googleCredential);
+
+			const user = account.user;
+			const reference = database().ref(`/users/${user.uid}`);
+
+			// Ensure the user data is stored in the Firebase Realtime Database
 			reference.once('value').then(snapshot => {
-				if (!(user.user.id in snapshot.toJSON())) {
-					console.log(user.user.id);
-					reference.child(user.user.id).set({
-						name: user.user.name,
-						email: user.user.email,
-					})
+				if (!snapshot.exists()) {
+					//console.log(user.uid);
+					reference.set({
+						name: user.displayName,
+						email: user.email,
+					});
 				}
 			});
-			storeData(user.user, "user");
-			setError();
+
+			storeData(user, "user");
+			setUserInfo(user);
+			setError(null);
 		} catch (e) {
 			setError(e);
-			console.log(e)
+			//console.log(e);
 		}
 	};
+
 
 	const logout = () => {
 		setUserInfo();
@@ -105,15 +112,19 @@ export default function RootLayout() {
 		return null;
 	}
 
+	function deleteUserData() {
+		setUserInfo(null);
+	}
 
+	//console.log("userInfo", userInfo)
 
 	return (
 		<>
-			{userInfo ?
+			{userInfo != null ?
 				<>
 					<IconRegistry icons={EvaIconsPack} />
 					<ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-						<UserContext.Provider value={userInfo}>
+						<UserContext.Provider value={{ userInfo, deleteUserData }}>
 							<Stack screenOptions={{ headerShown: false }}>
 								<Stack.Screen name="(tabs)/index" />
 							</Stack>

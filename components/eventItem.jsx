@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
-import { Card, Text, Button, Icon } from '@ui-kitten/components';
+import { Card, Text, Button, Icon, ButtonGroup } from '@ui-kitten/components';
+import { router } from 'expo-router';
 
 const Header = (props) => (
     <View {...props}>
@@ -16,46 +17,49 @@ const Footer = (props) => (
     <View
         {...props}
         // eslint-disable-next-line react/prop-types
-        style={[props.style, styles.footerContainer]}
+        style={styles.footerContainer}
     >
         <Button
             style={styles.footerControl}
             size='small'
-            status='basic'
+            status='danger'
         >
-            CANCEL
+            ABSENT
         </Button>
         <Button
             style={styles.footerControl}
             size='small'
+            status='success'
         >
-            ACCEPT
+            PRESENT
         </Button>
     </View>
 );
 
+const pressed = (link) => (
+    router.push(link)
+
+);
 
 export default function EventItem() {
     return (
         <Card
             style={styles.card}
-        //header={Header}
-        //footer={Footer}
-        //status='basic'
+            onPress={() => pressed('page/eventDetail')}
         >
             <View style={{ flexDirection: 'row' }}>
 
                 <View>
-                    <Header />
-                    <Text></Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Icon name='pin-outline' fill='gray' height={20} width={20} />
-                        <Text appearance='hint'>Nice</Text>
-                    </View>
+                    <Header style={{ marginBottom: 16 }} />
                     <View style={{ flexDirection: 'row' }}>
                         <Icon name='calendar-outline' fill='gray' height={20} width={20} />
                         <Text appearance='hint'>10 February 18h30-20h30</Text>
                     </View>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Icon name='pin-outline' fill='gray' height={20} width={20} />
+                        <Text appearance='hint'>Nice</Text>
+                    </View>
+                    <Footer />
                 </View>
             </View>
         </Card>
@@ -72,11 +76,12 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        width: '90%'
+        width: '94%',
     },
     footerContainer: {
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-start',
+        marginTop: 16,
     },
     footerControl: {
         marginHorizontal: 2,

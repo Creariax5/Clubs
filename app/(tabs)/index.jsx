@@ -61,13 +61,8 @@ const renderIcon = (props) => (
 	</View>
 );
 
-const renderTitle = (props) => (
-	<Text category='h4'>CLUBS</Text>
-);
-
 export default function HomeLayout() {
 	const [selectedIndex, setSelectedIndex] = React.useState(1);
-	const user = React.useContext(UserContext);
 
 	const navig = (index) => (
 		setSelectedIndex(index)
@@ -87,6 +82,14 @@ export default function HomeLayout() {
 		}
 	);
 
+	const renderTitle = (props) => (
+		<Text category='h5'>
+			{
+				selectedIndex == 0 ? "MESSAGE" : selectedIndex == 1 ? "CLUBS" : "EVENT"
+			}
+		</Text>
+	);
+
 	return (
 		<Layout
 			style={{ flex: 1 }}
@@ -95,7 +98,7 @@ export default function HomeLayout() {
 			<SafeAreaView style={styles.container}>
 				<TopNavigation
 					alignment='center'
-					title={user.name}
+					title={renderTitle}
 					//subtitle='Subtitle'
 					accessoryLeft={renderIcon}
 				//accessoryRight={renderSettingsAction}

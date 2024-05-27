@@ -2,12 +2,12 @@ import { Text, useTheme } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native';
 import { View } from 'react-native';
 
-export default function MessageBulb({ sender, message }) {
+export default function MessageBulb({ sender, uid, message }) {
     const theme = useTheme();
 
     return (
         <>
-            {sender == 'Florian' ?
+            {sender == uid ?
                 <View style={[styles.bulb, styles.sender, { backgroundColor: theme['color-primary-500'] }]}>
                     <Text style={{ color: theme['color-basic-100'] }}>{message}</Text>
                 </View>

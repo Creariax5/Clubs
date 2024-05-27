@@ -15,7 +15,7 @@ export default {
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.elc.clubs",
-      googleServicesFile: process.env.GOOGLE_SERVICES_INFO,
+      googleServicesFile: "./GoogleService-Info.plist",//process.env.GOOGLE_SERVICES_INFO,
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +23,7 @@ export default {
         "backgroundColor": "#ffffff"
       },
       "package": "com.elc.clubs",
-      googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+      googleServicesFile: "./google-services.json",//process.env.GOOGLE_SERVICES_JSON,
     },
     "web": {
       "bundler": "metro",
@@ -33,6 +33,7 @@ export default {
     "plugins": [
       "expo-router",
       "@react-native-google-signin/google-signin",
+      "@react-native-firebase/auth",
       "@react-native-firebase/app",
       [
         "expo-build-properties",
