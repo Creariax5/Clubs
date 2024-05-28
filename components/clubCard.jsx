@@ -14,6 +14,17 @@ const Header = (props) => (
 export default function ClubCard({ clubID, name, description }) {
     const { userInfo, deleteUserData } = React.useContext(UserContext);
 
+    description = description.substring(0, 70);
+    let c = "c"
+    let i = 0;
+    while (c != " ") {
+        c = description.charAt(description.length - 1);
+        i++
+        description = description.substring(0, 70 - i);
+    }
+    description = description + "...";
+
+
     function joinClub(id) {
         const ref0 = database().ref(`/club/${id}/members/`);
 
@@ -111,7 +122,7 @@ export default function ClubCard({ clubID, name, description }) {
             <Text style={{ marginBottom: 8 }} category='h6'>
                 {name}
             </Text>
-            <Text category='s1' style={{ maxHeight: 56 }}>
+            <Text category='s1' style={{ maxHeight: 80 }}>
                 {description}
             </Text>
         </Card>
