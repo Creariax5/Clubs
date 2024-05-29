@@ -1,30 +1,25 @@
 import React from 'react';
-import { StyleSheet, View, Image, ImageBackground } from 'react-native';
-import { Card, Text, Button, Layout, Divider } from '@ui-kitten/components';
-import database from '@react-native-firebase/database';
-import { UserContext } from "../app/_layout";
-import moment from 'moment';
+import { StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Layout, Button, Text, Icon, TopNavigation, TopNavigationAction, Tab, TabBar } from '@ui-kitten/components';
 import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
+import database from '@react-native-firebase/database';
+import { UserContext } from "../../../_layout";
 
 
-const Header = (props) => (
-    <ImageBackground source={require('../assets/images/calisthenics.png')} resizeMode="cover" style={styles.image}>
-    </ImageBackground>
+const backIcon = (props) => (
+    <Icon
+        {...props}
+        onPress={() => router.back()}
+        name='arrow-back'
+    />
 );
 
-export default function ClubCard({ clubID, name, description }) {
+export default function ClubDetail() {
+    const [club, setClub] = React.useState([]);
+
     const { userInfo, deleteUserData } = React.useContext(UserContext);
-
-    description = description.substring(0, 70);
-    let c = "c"
-    let i = 0;
-    while (c != " ") {
-        c = description.charAt(description.length - 1);
-        i++
-        description = description.substring(0, 70 - i);
-    }
-    description = description + "...";
-
 
     function joinClub(id) {
         const ref0 = database().ref(`/club/${id}/members/`);
@@ -78,7 +73,7 @@ export default function ClubCard({ clubID, name, description }) {
                     //create conv
                     const ref4 = database().ref(`/conv/${leng}`);
                     ref4.set({
-                        title: name,
+                        title: club.clubName,
                         users: [userInfo.uid],
                         messages: [
                             {
@@ -99,64 +94,71 @@ export default function ClubCard({ clubID, name, description }) {
         })
     }
 
-    const Footer = (props) => (
-        <View
-            {...props}
-            style={[props.style, styles.footerContainer]}
-        >
-            <Button
-                style={styles.footerControl}
-                size='small'
-                onPress={() => joinClub(clubID)}
-            >
-                NOUS REJOINDRE
-            </Button>
-        </View>
+    const clubID = useLocalSearchParams()["id"];
+
+    const getClubData = async () => {
+
+        const ref2 = database().ref(`/club/${clubID}`);
+        ref2.once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                var myClub = snapshot.val();
+                myClub["id"] = clubID;
+                setClub(myClub);
+            }
+        });
+    };
+
+    React.useEffect(() => {
+        getClubData();
+    }, []);
+
+
+    const renderBackAction = () => (
+        <TopNavigationAction style={styles.logo} icon={backIcon} />
     );
+
     return (
-        <Card
-            style={styles.card}
-            header={Header}
-            footer={Footer}
-            onPress={() => router.push(`page/club/detail/${clubID}`)}
-        //status='basic'
+        <Layout
+            level='1'
+            style={{ flex: 1, }}
         >
-            <Text style={{ marginBottom: 8 }} category='h6'>
-                {name}
-            </Text>
-            <Text category='s1' style={{ maxHeight: 80 }}>
-                {description}
-            </Text>
-        </Card>
+            <SafeAreaView style={{ flex: 1 }}>
+                <TopNavigation
+                    alignment='center'
+                    accessoryLeft={renderBackAction}
+                    title={club.clubName}
+                    //subtitle='Subtitle'
+                    maxHeight={100}
+                />
+                <Layout style={{ padding: 16, }}>
+                    <Text category='h4'>{club.clubName}</Text>
+                    <Text>{club.description}</Text>
+                </Layout>
+                <Button
+                    style={styles.footerControl}
+                    size='small'
+                    onPress={() => joinClub(clubID)}
+                >
+                    NOUS REJOINDRE
+                </Button>
+            </SafeAreaView>
+        </Layout>
     );
 }
 
 const styles = StyleSheet.create({
-    topContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+    container: {
+        padding: 16,
     },
-    card: {
-        flex: 1,
-        margin: 16,
-        marginTop: 0,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        maxWidth: 320,
+    messageBar: {
+        padding: 16,
+        paddingTop: 0,
+        backgroundColor: 'transparent',
+        width: '100%',
+        maxHeight: 120,
     },
-    footerContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-    },
-    footerControl: {
-        marginHorizontal: 2,
-    },
-    tinyLogo: {
-        height: 140,
-    },
-    image: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 80
+    logo: {
+        padding: 16,
     },
 });
+
