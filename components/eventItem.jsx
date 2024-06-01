@@ -1,17 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 import { Card, Text, Button, Icon, ButtonGroup } from '@ui-kitten/components';
 import { router } from 'expo-router';
+import textSized from "../app/func/myFunc";
 
-const Header = (props) => (
-    <View {...props}>
-        <Text category='h6'>
-            Cardio
-        </Text>
-        <Text category='s1'>
-            Séance de cardio en bord de mer le soir
-        </Text>
-    </View>
-);
 
 const Footer = (props) => (
     <View
@@ -41,7 +32,19 @@ const pressed = (link) => (
 
 );
 
-export default function EventItem() {
+export default function EventItem({ item }) {
+
+    const Header = (props) => (
+        <View {...props}>
+            <Text category='h6'>
+                {item.title}
+            </Text>
+            <Text category='s1'>
+                {textSized(item.description)}
+            </Text>
+        </View>
+    );
+
     return (
         <Card
             style={styles.card}
@@ -53,11 +56,11 @@ export default function EventItem() {
                     <Header style={{ marginBottom: 16 }} />
                     <View style={{ flexDirection: 'row' }}>
                         <Icon name='calendar-outline' fill='gray' height={20} width={20} />
-                        <Text appearance='hint'>10 February 18h30-20h30</Text>
+                        <Text appearance='hint'>{item.date}</Text>
                     </View>
                     <View style={{ flexDirection: 'row' }}>
                         <Icon name='pin-outline' fill='gray' height={20} width={20} />
-                        <Text appearance='hint'>Nice</Text>
+                        <Text appearance='hint'>{item.place}</Text>
                     </View>
                     <Footer />
                 </View>
@@ -76,7 +79,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        width: '94%',
+        width: '92%',
     },
     footerContainer: {
         flexDirection: 'row',
