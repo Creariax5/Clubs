@@ -38,12 +38,11 @@ const SettingsIcon = (props) => (
 		height="35"
 		width="35"
 		name='settings-2-outline'
-		onPress={() => pressed('page/settings')}
 	/>
 );
 
 const renderSettingsAction = () => (
-	<TopNavigationAction style={styles.logo} icon={SettingsIcon} />
+	<TopNavigationAction style={styles.logo} icon={SettingsIcon} onPress={() => pressed('page/settings')} />
 );
 
 const pressed = (link) => (

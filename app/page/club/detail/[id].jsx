@@ -12,7 +12,6 @@ import joinClub from "../join";
 const backIcon = (props) => (
     <Icon
         {...props}
-        onPress={() => router.back()}
         name='arrow-back'
     />
 );
@@ -40,7 +39,7 @@ export default function ClubDetail() {
 
 
     const renderBackAction = () => (
-        <TopNavigationAction style={styles.logo} icon={backIcon} />
+        <TopNavigationAction style={styles.logo} icon={backIcon} onPress={() => router.back()} />
     );
 
     return (

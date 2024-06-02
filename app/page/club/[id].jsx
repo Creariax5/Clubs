@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, ScrollView, TouchableOpacity, View } from 'react-native';
-import { Layout, Input, Text, Icon, TopNavigation, TopNavigationAction, Tab, TabBar } from '@ui-kitten/components';
+import { Layout, Input, Text, Icon, TopNavigation, TopNavigationAction, Tab, TabBar, Button } from '@ui-kitten/components';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
@@ -20,7 +20,6 @@ const renderIcon = (props) => (
 const backIcon = (props) => (
     <Icon
         {...props}
-        onPress={() => router.back()}
         name='arrow-back'
     />
 );
@@ -51,8 +50,45 @@ export default function ClubPage() {
 
 
     const renderBackAction = () => (
-        <TopNavigationAction style={styles.logo} icon={backIcon} />
+        <TopNavigationAction style={styles.logo} icon={backIcon} onPress={() => router.back()} />
     );
+
+    const quit = () => {
+        const ref0 = database().ref(`/club/${clubID}/members/`);
+
+        ref0.once('value').then(snapshot => {
+            let membrers = snapshot.val();
+            membrers.splice(membrers.indexOf(userInfo.uid), 1);
+            //del you from club
+            ref0.set(
+                membrers
+            );
+        });
+
+        const ref = database().ref(`/users/${userInfo.uid}/clubID/`);
+        ref.remove();
+
+        const ref2 = database().ref(`/club/${clubID}/convID/`);
+        leng = null;
+        ref2.once('value').then(snapshot => {
+            let convID = snapshot.val();
+
+            const ref1 = database().ref(`/conv/${convID}/users/`);
+            ref1.once('value').then(snapshot => {
+                let membrers = snapshot.val();
+                membrers.splice(membrers.indexOf(userInfo.uid), 1);
+                //del you from club
+                ref1.set(
+                    membrers
+                );
+
+            });
+
+        })
+
+        router.back();
+
+    };
 
     return (
         <Layout
@@ -79,11 +115,22 @@ export default function ClubPage() {
                         <Layout style={{ padding: 16, }}>
                             <Text category='h4'>{club.clubName}</Text>
                             <Text>{club.description}</Text>
+                            <Button
+                                appearance='outline'
+                                size='large'
+                                status='danger'
+                                style={{ marginTop: 16 }}
+                                onPress={() => quit()}
+                            >
+                                Quitter le club
+                            </Button>
+
                         </Layout>
                         : selectedIndex == 1 ?
                             <Membres members={club.members}></Membres>
                             : null
                 }
+
 
             </SafeAreaView>
         </Layout>

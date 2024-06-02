@@ -7,7 +7,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const backIcon = (props) => (
     <Icon
         {...props}
-        onPress={() => router.back()}
         name='arrow-back'
     />
 );
@@ -15,7 +14,7 @@ const backIcon = (props) => (
 
 export default function Settings() {
     const renderBackAction = () => (
-        <TopNavigationAction style={styles.logo} icon={backIcon} />
+        <TopNavigationAction style={styles.logo} icon={backIcon} onPress={() => router.back()} />
     );
 
     return (
@@ -28,7 +27,7 @@ export default function Settings() {
                     alignment='center'
                     accessoryLeft={renderBackAction}
                     title='Settings'
-                    //subtitle='Customize your profile'
+                //subtitle='Customize your profile'
                 />
             </SafeAreaView>
         </Layout>
@@ -37,6 +36,6 @@ export default function Settings() {
 
 const styles = StyleSheet.create({
     logo: {
-		padding: 16,
-	},
+        padding: 16,
+    },
 });

@@ -21,7 +21,6 @@ const renderIcon = (props) => (
 const backIcon = (props) => (
     <Icon
         {...props}
-        onPress={() => router.back()}
         name='arrow-back'
     />
 );
@@ -199,7 +198,8 @@ export default function Chat() {
     );
 
     const renderBackAction = () => (
-        <TopNavigationAction style={styles.logo} icon={backIcon} />
+        <TopNavigationAction style={styles.logo} icon={backIcon} onPress={() => router.back()}
+        />
     );
 
     function getTitle() {
