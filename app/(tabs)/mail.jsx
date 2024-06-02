@@ -19,7 +19,7 @@ export default function Mail() {
 	const [data, setData] = React.useState([]);
 	const { userInfo, deleteUserData } = React.useContext(UserContext);
 
-	function getTitle(item) {
+	function getTitle(item, index) {
 		let title = "";
 		if (item.users[0] == userInfo.uid) {
 			title = item.users[1];
@@ -27,12 +27,12 @@ export default function Mail() {
 			title = item.users[0];
 		}
 
-		return title;
+		return title
 	}
 
 	const renderItem = ({ item, index }) => (
 		<ListItem
-			title={`${item.title != undefined ? item.title : getTitle(item)}`}
+			title={`${item.title != undefined ? item.title : getTitle(item, index)}`}
 			description={`En ligne il y a ${index + 1} h`}
 			accessoryLeft={renderItemIcon}
 			onPress={() => pressed(item.id)}
@@ -56,10 +56,32 @@ export default function Mail() {
 					//console.log(categoryDataID[i]["users"])
 					if (categoryDataID[i]["users"].includes(userInfo.uid)) {
 						categoryData.push(categoryDataID[i]);
+
+						if (categoryData[i].title == undefined) {
+							let title = "";
+							if (categoryData[i].users[0] == userInfo.uid) {
+								title = categoryData[i].users[1];
+							} else {
+								title = categoryData[i].users[0];
+							}
+
+							const ref1 = database().ref(`/users/`);
+
+							ref1.once('value').then(snapshot => {
+								if (snapshot.exists()) {
+									var dat = snapshot.val();
+									categoryData[i].title = dat[title].name
+
+									setData(categoryData)
+
+								}
+							});
+						}
+
 					}
 				}
 
-				setData(categoryData)
+				//setData(categoryData)
 			}
 		});
 	};

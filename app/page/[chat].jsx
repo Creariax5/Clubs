@@ -31,6 +31,8 @@ export default function Chat() {
     const [value, setValue] = React.useState('');
     const scrollViewRef = React.useRef();
     const [data, setData] = React.useState([]);
+    const [title, setTitle] = React.useState("");
+
 
     // local : soit l'id de la conv si elle existe sinon id du user
     const [local, setLocal] = React.useState(useLocalSearchParams()["chat"]);
@@ -200,6 +202,30 @@ export default function Chat() {
         <TopNavigationAction style={styles.logo} icon={backIcon} />
     );
 
+    function getTitle() {
+        if (data.users == undefined) {
+            return;
+        }
+        let dat = data;
+        if (data.users[0] == userInfo.uid) {
+            dat["title"] = data.users[1];
+        } else {
+            dat["title"] = data.users[0];
+        }
+
+        const ref1 = database().ref(`/users/${dat["title"]}`);
+
+        ref1.once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                var nVal = snapshot.val();
+                dat["title"] = nVal.name
+
+                setTitle(nVal.name)
+            }
+        });
+
+    }
+
     return (
         <Layout
             level='1'
@@ -209,7 +235,7 @@ export default function Chat() {
                 <TopNavigation
                     alignment='center'
                     accessoryLeft={renderBackAction}
-                    title={data["title"] == undefined ? local : data["title"]}
+                    title={data["title"] == undefined ? (title == "" ? getTitle() : title) : data["title"]}
                     subtitle='Subtitle'
                     maxHeight={100}
                 />
