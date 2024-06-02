@@ -32,8 +32,8 @@ export default function Chat() {
     const scrollViewRef = React.useRef();
     const [data, setData] = React.useState([]);
 
+    // local : soit l'id de la conv si elle existe sinon id du user
     const [local, setLocal] = React.useState(useLocalSearchParams()["chat"]);
-    console.log(local)
     const { userInfo, deleteUserData } = React.useContext(UserContext);
 
     const getMessageData = async () => {
@@ -45,6 +45,7 @@ export default function Chat() {
                 setData(snapshot.val())
 
             } else {
+                // inutile ? (si utilisé a la creation d'une conv entre 2 pers)
                 const ref0 = database().ref(`/conv/`);
                 console.log("local")
 
@@ -53,10 +54,10 @@ export default function Chat() {
                         if (snapshot.val()[i]['title'] == undefined) {
 
                             if (snapshot.val()[i]['users'].includes(local) && snapshot.val()[i]['users'].includes(userInfo.uid)) {
-                                console.log(local)
+                                // inutile car local est deja le nom de la conv ?
                                 let conv = snapshot.val()[i];
-                                let title = conv['users'].splice(conv['users'].indexOf(local), 1)[0];
-                                conv["title"] = title;
+                                conv['users'].splice(conv['users'].indexOf(local), 1);
+                                conv["title"] = conv['users'][0];
 
                                 setLocal(i);
                                 console.log("conv id 2", local)
@@ -72,20 +73,73 @@ export default function Chat() {
 
     React.useEffect(() => {
         getMessageData();
+
     }, []);
 
+    React.useEffect(() => {
+        const listerNewMsgRef = database().ref(`users/${userInfo.uid}/notif/msg`);
+
+        const handleNewMessages = (snapshot) => {
+            const messages = snapshot.val();
+
+            if (messages) {
+                const newMessages = [];
+
+                Object.keys(messages).forEach((key) => {
+                    const msg = messages[key];
+                    if (msg && msg["convID"] === local) {
+                        getMessageData();
+
+                        return;
+                    }
+                });
+            }
+        };
+
+        listerNewMsgRef.on('value', handleNewMessages);
+
+        return () => listerNewMsgRef.off('value', handleNewMessages); // Clean up the listener on unmount
+    }, [userInfo.uid, local]);
+
+
+    function sendTo(users, msg, convID) {
+        users.splice(users.indexOf(userInfo.uid), 1);
+        for (let i = 0; i < users.length; i++) {
+            let leng = 0;
+
+            const ref4 = database().ref(`/users/${users[i]}/notif/msg/`);
+            ref4.once('value').then(snapshot => {
+                if (snapshot.exists()) {
+                    leng = snapshot.val().length;
+                }
+
+                const ref3 = database().ref(`/users/${users[i]}/notif/msg/${leng}`);
+
+                ref3.set({
+                    convID: convID,
+                    message: msg
+                });
+
+            })
+
+        }
+    }
+
     function send() {
+        // si la conversation n'a pas de messages
         if (data["messages"] == undefined) {
             const ref0 = database().ref(`/conv/`);
 
+            // recup la taille de la conv (inutile car egale a 0 ?)
             var leng = 0;
             ref0.once('value').then(snapshot => {
                 if (snapshot.exists()) {
                     leng = snapshot.val().length;
                 }
 
+                // ajouter le message envoyé à la conv
                 const reference = database().ref(`/conv/${leng}`);
-                reference.set({
+                let msg = {
                     users: [local, userInfo.uid],
                     messages: [{
                         id: 0,
@@ -93,29 +147,35 @@ export default function Chat() {
                         message: value,
                         time: moment().utcOffset('+01:00').format('DD/MM/YYYY/HH:mm'),
                     }]
-                });
+                }
 
+                reference.set(msg);
+
+                // leng : nombres de messages dans la conv
                 setLocal(leng);
                 getMessageData();
 
+                sendTo([local, userInfo.uid], msg, leng)
+
             });
         } else {
-            data["messages"].push(
-                {
-                    id: data["messages"].length + 2,
-                    sender: userInfo.uid,
-                    message: value,
-                    time: moment().utcOffset('+01:00').format('DD/MM/YYYY/HH:mm'),
-                },
-            );
-            console.log("conv id", local)
-            const reference = database().ref(`/conv/${local}/messages/${data["messages"].length - 1}`);
-            reference.set({
-                id: data["messages"].length - 1,
+            let msg = {
+                id: data["messages"].length,
                 sender: userInfo.uid,
                 message: value,
                 time: moment().utcOffset('+01:00').format('DD/MM/YYYY/HH:mm'),
-            });
+            }
+
+            // ajouter localement le message à la conv 
+            data["messages"].push(msg);
+
+            // ajouter sur la base de données le message à la conv 
+            const reference = database().ref(`/conv/${local}/messages/${data["messages"].length - 1}`);
+            reference.set(msg);
+
+            // ajouter à la file des messages non lu de chaque user de la conv
+            sendTo(data["users"], msg, local);
+
         }
 
         setValue('');
