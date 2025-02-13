@@ -49,7 +49,7 @@ Clubs is an innovative mobile application designed to connect athletes, streamli
 The application is under active development. We regularly update our progress and welcome community feedback to shape the future of Clubs.
 
 ## 👥 Team
-We are currently a team of 3 developers working on this project. We're actively seeking a Community Manager with expertise in vertical short-form promotional content (TikTok).
+For now I'm the only one working on this project
 
 ## 🤝 Contributing
 We're open to contributions! If you're interested in joining our team or providing feedback, please reach out through our [feedback form](https://lnkd.in/evGJHzKP).
