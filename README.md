@@ -2,7 +2,7 @@
 
 Clubs is an innovative mobile application designed to connect athletes, streamline sports club management, and build vibrant sporting communities. Whether you're looking to join a local club or create your own sports community, Clubs provides all the tools you need.
 
-![image](https://github.com/user-attachments/assets/19c4d16b-711f-4e00-95a5-c57089eca39d)
+![image](https://github.com/user-attachments/assets/9b862b1e-3791-4369-b625-bf32c2243bd4)
 
 
 ## 🌟 Features
